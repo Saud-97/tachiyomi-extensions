@@ -8,8 +8,5 @@ class aresmanga2 : MangaThemesia(
     "AresManga (en-aresmanga.com)",
     "https://en-aresmanga.com",
     "ar",
-    mangaUrlDirectory = "/series",
     dateFormat = SimpleDateFormat("MMMMM dd, yyyy", Locale("ar")),
-) {
-    override val mangaUrlDirectory = "/series"
-}
+)

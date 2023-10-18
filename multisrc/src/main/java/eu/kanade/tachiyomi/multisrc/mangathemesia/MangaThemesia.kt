@@ -2,6 +2,7 @@ package eu.kanade.tachiyomi.multisrc.mangathemesia
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.util.Base64
 import androidx.preference.PreferenceScreen
 import eu.kanade.tachiyomi.lib.randomua.addRandomUAPreferenceToScreen
 import eu.kanade.tachiyomi.lib.randomua.getPrefCustomUA
@@ -276,6 +277,27 @@ abstract class MangaThemesia(
 
         // Some sites also loads pages via javascript
         if (htmlPages.isNotEmpty()) { return htmlPages }
+
+        // custom for aresmanga en
+        val script = document.selectFirst("div.readercontent > div.wrapper > script")
+        val scriptSrc = script?.attr("src")
+        if (scriptSrc != null) {
+            if (scriptSrc.startsWith("data:text/javascript;base64,")) {
+                val encodedData = scriptSrc.substringAfter("data:text/javascript;base64,")
+                val decodedData = Base64.decode(encodedData, Base64.DEFAULT).toString(Charsets.UTF_8)
+
+                val imageListJson = JSON_IMAGE_LIST_REGEX.find(decodedData)?.destructured?.toList()?.get(0).orEmpty()
+                val imageList = try {
+                    json.parseToJsonElement(imageListJson).jsonArray
+                } catch (_: IllegalArgumentException) {
+                    emptyList()
+                }
+
+                return imageList.mapIndexed { i, jsonEl ->
+                    Page(i, document.location(), jsonEl.jsonPrimitive.content)
+                }
+            }
+        }
 
         val docString = document.toString()
         val imageListJson = JSON_IMAGE_LIST_REGEX.find(docString)?.destructured?.toList()?.get(0).orEmpty()
