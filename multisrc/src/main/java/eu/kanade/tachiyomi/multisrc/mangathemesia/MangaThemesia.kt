@@ -45,7 +45,7 @@ abstract class MangaThemesia(
     override val name: String,
     override val baseUrl: String,
     override val lang: String,
-    val mangaUrlDirectory: String = "/manga",
+    val mangaUrlDirectory: String = "/series",
     val dateFormat: SimpleDateFormat = SimpleDateFormat("MMMM dd, yyyy", Locale.US),
 ) : ParsedHttpSource(), ConfigurableSource {
 
